@@ -1,81 +1,96 @@
-:root{
---max-page-width: 960px;
---body-padding:2em;
---body-line-height:1.5;
---p-max-width:75ch;
+:root {
+	--max-page-width: 960px;
+	--body-padding: 2em;
+	--body-line-height: 1.5;
+	--p-max-width: 75ch;
 }
 
 *,
 *::before,
 *::after {
--webkit-box-sizing:border-box;
-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	box-sizing: border-box;
 }
 
 * {
-margin:0;
-padding:0;
+	margin: 0;
+	padding: 0;
 }
 
 html {
-color-scheme:dark light;
-hanging-punctuation: first last;
+	color-scheme: dark light;
+	hanging-punctuation: first last;
 }
 
 body {
-scroll-behavior: smooth;
-text-rendering: optimizeSpeed;
-line-height: var(--body-line-height);
-min-height: 100vh;
-min-height: 100svh;
-padding: var(--body-padding);
-font-family: Arial, Helvetica, sans-serif;
+	scroll-behavior: smooth;
+	text-rendering: optimizeSpeed;
+	line-height: var(--body-line-height);
+	min-height: 100vh;
+	min-height: 100svh;
+	padding: var(--body-padding);
+	font-family: Arial, Helvetica, sans-serif;
 }
 
-img,picture,svg,video {
-display: block;
-max-width:100%;
-height:auto;
-font-style:italic;
+img,
+picture,
+svg,
+video {
+	display: block;
+	max-width: 100%;
+	height: auto;
+	font-style: italic;
 }
 
-h1,h2,h3,h4,h5,h6{
-text-wrap:balance;
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+	text-wrap: balance;
 }
 
-p,li {
-max-width: var(--p-max-width, 75ch);
-text-wrap:pretty;
+p,
+li {
+	max-width: var(--p-max-width, 75ch);
+	text-wrap: pretty;
 }
 
 code {
-display:block;
-border: 1px solid rgb(141,141,141);
-padding: 1em 2em;
-max-width: var(--p-max-width, 75ch);
+	display: block;
+	border: 1px solid rgb(141, 141, 141);
+	padding: 1em 2em;
+	max-width: var(--p-max-width, 75ch);
 }
 
-input,textarea,button,select {
-font:inherit;
+input,
+textarea,
+button,
+select {
+	font: inherit;
 }
 
 @media (prefers-reduced-motion: no-preference) {
-:has(:target) {
-scroll-behavior:smooth;
-} }
+	:has(:target) {
+		scroll-behavior: smooth;
+	}
+}
 
 /*  CUSTOM */
 
-body{
-    display:grid;
-    place-items: center;
-    min-height: 100vh;;
-    min-height: 100dvh;
-    background-color: #f0f8ff;
+body {
+	width: 100%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	height: 100dvh;
+	min-height: 100vh;
+	min-height: 100dvh;
+	background-color: #abbac7;
 }
 
-#game{
-    width:640px;
-    height:360px;
-    background-color: #000;
+#mycanvas {
+	width: 640px;
+	height: 384px;
 }
