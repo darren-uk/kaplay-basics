@@ -6,7 +6,7 @@ kaplay({
 	width: 640,
 	height: 384,
 	canvas: document.querySelector("#mycanvas"),
-	// background: [211, 100, 119],
+	background: [158, 158, 217],
 	gravity: 500,
 });
 
@@ -17,6 +17,7 @@ scene("game", () => {
 	loadSprite("grass-angle-left", "./sprites/32x32/grass-angle-left.png");
 	loadSprite("grass-angle-right", "./sprites/32x32/grass-angle-right.png");
 	loadSprite("grass", "./sprites/32x32/grass.png");
+	loadSprite("blades", "./sprites/32x32/blades.png");
 	const cat = add([
 		sprite("kat"),
 		pos(50, 50),
@@ -39,7 +40,7 @@ scene("game", () => {
 			"                    ",
 			"                    ",
 			"                    ",
-			"                    ",
+			"bbbbbbb         bbbb",
 			"gggggggg l    r gggggg",
 			"xxxxxxxxxxxxxxxxxxxx",
 			"xxxxxxxxxxxxxxxxxxxx",
@@ -64,6 +65,7 @@ scene("game", () => {
 					body({ isStatic: true }),
 					"dirt",
 				],
+				"b": () => [sprite("blades"), area(), "blades"],
 			},
 		}
 	);
