@@ -12,14 +12,8 @@ kaplay({
 
 scene("game", () => {
 	setGravity(500);
-	// loadSprite("player", "./sprites/32x32/cat-sheet.png", {
-	// 	sliceX: 4,
-	// 	sliceY: 1,
-	// 	anims: {
-	// 		walk: { from: 0, to: 3, loop: true },
-	// 	},
-	// });
-	loadSprite("cat", "./sprites/sonny-complete3.png", {
+
+	loadSprite("player", "./sprites/sonny-complete3.png", {
 		sliceX: 3,
 		sliceY: 3,
 		anims: {
@@ -28,24 +22,15 @@ scene("game", () => {
 			crouch: { from: 7, to: 7, loop: false },
 		},
 	});
-	loadSprite("kat", "./sprites/32x32/kat.png");
-	loadSprite("dirt", "./sprites/32x32/dirt.png");
-	loadSprite("grass-angle-left", "./sprites/32x32/grass-angle-left2.png");
-	loadSprite("grass-angle-right", "./sprites/32x32/grass-angle-right2.png");
-	loadSprite("grass", "./sprites/32x32/grass2.png");
-	loadSprite("blades", "./sprites/32x32/blades2.png");
+	loadSprite("grass", "./sprites/grass2.png");
+	loadSprite("bush", "./sprites/bush2.png");
+	loadSprite("house", "./sprites/house.png");
+	const house = add([sprite("house"), pos(0, -10), area()]);
+	const bush1 = add([sprite("bush"), pos(200, 30), area()]);
+	const bush2 = add([sprite("bush"), pos(-180, 30), area()]);
 
-	// const player = add([
-	// 	sprite("player"),
-	// 	pos(50, 50),
-	// 	body(),
-	// 	area(),
-	// 	offscreen({ destroy: true }),
-	// 	"player",
-	// 	{ speed: 300 },
-	// ]);
 	const player = add([
-		sprite("cat"),
+		sprite("player"),
 		pos(50, 50),
 		body(),
 		area(),
@@ -55,7 +40,7 @@ scene("game", () => {
 			speed: 300,
 		},
 	]);
-	const dirt = make([sprite("dirt")]);
+	const grass = add([sprite("grass"), pos(0, 272), area()]);
 
 	addLevel(
 		[
@@ -68,31 +53,37 @@ scene("game", () => {
 			"                    ",
 			"                    ",
 			"                    ",
-			"bbbbbbbbb       bbbbb",
-			"gggggggg lbbbbr gggggg",
-			"gggggggggggggggggggg",
+			"                    ",
+			"xxxxxxxxxxx    xxxxx",
+			"xxxxxxxxxxxxxxxxxxxx",
 		],
 		{
 			tileWidth: 32,
 			tileHeight: 32,
 			tiles: {
-				"x": () => [sprite("dirt"), area(), body({ isStatic: true }), "dirt"],
-				"g": () => [sprite("grass"), area(), body({ isStatic: true }), "dirt"],
-				"l": () => [
-					sprite("grass-angle-left"),
-					area({ shape: new Polygon([vec2(0), vec2(64, 64), vec2(0, 64)]) }),
+				"x": () => [
+					rect(32, 32),
+					opacity(0),
+					area(),
 					body({ isStatic: true }),
-					"dirt",
+					"blank",
 				],
-				"r": () => [
-					sprite("grass-angle-right"),
-					area({
-						shape: new Polygon([vec2(64, 0), vec2(64, 64), vec2(0, 64)]),
-					}),
-					body({ isStatic: true }),
-					"dirt",
-				],
-				"b": () => [sprite("blades"), area(), "blades"],
+
+				// "l": () => [
+				// 	sprite("grass-angle-left"),
+				// 	area({ shape: new Polygon([vec2(0), vec2(64, 64), vec2(0, 64)]) }),
+				// 	body({ isStatic: true }),
+				// 	"dirt",
+				// ],
+				// "r": () => [
+				// 	sprite("grass-angle-right"),
+				// 	area({
+				// 		shape: new Polygon([vec2(64, 0), vec2(64, 64), vec2(0, 64)]),
+				// 	}),
+				// 	body({ isStatic: true }),
+				// 	"dirt",
+				// ],
+				// "b": () => [sprite("blades"), area(), "blades"],
 			},
 		}
 	);
