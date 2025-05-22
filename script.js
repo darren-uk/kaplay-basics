@@ -30,10 +30,10 @@ scene("game", () => {
 	});
 	loadSprite("kat", "./sprites/32x32/kat.png");
 	loadSprite("dirt", "./sprites/32x32/dirt.png");
-	loadSprite("grass-angle-left", "./sprites/32x32/grass-angle-left.png");
-	loadSprite("grass-angle-right", "./sprites/32x32/grass-angle-right.png");
-	loadSprite("grass", "./sprites/32x32/grass.png");
-	loadSprite("blades", "./sprites/32x32/blades.png");
+	loadSprite("grass-angle-left", "./sprites/32x32/grass-angle-left2.png");
+	loadSprite("grass-angle-right", "./sprites/32x32/grass-angle-right2.png");
+	loadSprite("grass", "./sprites/32x32/grass2.png");
+	loadSprite("blades", "./sprites/32x32/blades2.png");
 
 	// const player = add([
 	// 	sprite("player"),
@@ -67,10 +67,10 @@ scene("game", () => {
 			"                    ",
 			"                    ",
 			"                    ",
-			"bbbbbbb         bbbb",
-			"gggggggg l    r gggggg",
-			"xxxxxxxxxxxxxxxxxxxx",
-			"xxxxxxxxxxxxxxxxxxxx",
+			"                    ",
+			"bbbbbbbbb       bbbbb",
+			"gggggggg lbbbbr gggggg",
+			"gggggggggggggggggggg",
 		],
 		{
 			tileWidth: 32,
