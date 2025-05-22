@@ -12,21 +12,27 @@ kaplay({
 
 scene("game", () => {
 	setGravity(500);
+	loadSprite("player", "./sprites/32x32/cat-sheet.png", {
+		sliceX: 4,
+		sliceY: 1,
+		anims: {
+			walk: { from: 0, to: 3, loop: true },
+		},
+	});
 	loadSprite("kat", "./sprites/32x32/kat.png");
 	loadSprite("dirt", "./sprites/32x32/dirt.png");
 	loadSprite("grass-angle-left", "./sprites/32x32/grass-angle-left.png");
 	loadSprite("grass-angle-right", "./sprites/32x32/grass-angle-right.png");
 	loadSprite("grass", "./sprites/32x32/grass.png");
 	loadSprite("blades", "./sprites/32x32/blades.png");
-	const cat = add([
-		sprite("kat"),
+
+	const player = add([
+		sprite("player"),
 		pos(50, 50),
 		body(),
 		area(),
-		rotate(),
-		anchor("center"),
 		offscreen({ destroy: true }),
-		"cat",
+		"player",
 		{ speed: 300 },
 	]);
 
@@ -70,50 +76,56 @@ scene("game", () => {
 		}
 	);
 
-	cat.onKeyDown((key) => {
+	// ----------------------------------------------
+	player.onKeyDown((key) => {
 		if (key === "right" || key === "d") {
-			cat.move(cat.speed, 0);
-			cat.angle = 20;
+			player.move(player.speed, 0);
+			player.flipX = true;
 		}
 		if (key === "left" || key === "a") {
-			cat.move(0 - cat.speed, 0);
-			cat.angle = -20;
+			player.move(0 - player.speed, 0);
+			player.flipX = false;
 		}
 		if (key === "down" || key === "s") {
-			cat.move(0, cat.speed);
-			cat.angle = 0;
+			player.move(0, player.speed);
 		}
 		if (key === "up" || key === "w") {
-			cat.move(0, 0 - cat.speed);
-			cat.angle = 0;
+			player.move(0, 0 - player.speed);
 		}
 	});
 
-	cat.onKeyRelease((key) => {
-		if (key === "right" || key === "left" || key === "d" || key === "a") {
-			cat.angle = 0;
+	player.onKeyPress((key) => {
+		if (key === "right" || key === "d") {
+			player.play("walk");
+		}
+		if (key === "left" || key === "a") {
+			player.play("walk");
 		}
 	});
 
-	// checks if cat is offscreen and resets position
-	// onUpdate(() => {
-	// 	if (cat.pos.x < 0) {
-	// 		cat.pos.x = 50;
-	// 		cat.pos.y = 50;
-	// 	}
-	// 	if (cat.pos.x > width()) {
-	// 		cat.pos.x = 50;
-	// 		cat.pos.y = 50;
-	// 	}
-	// });
+	player.onKeyRelease((key) => {
+		if (key === "right" || key === "d") {
+			player.stop("walk");
+			player.frame = 0;
+		}
+		if (key === "left" || key === "a") {
+			player.stop("walk");
+			player.frame = 0;
+		}
+	});
 
-	// bounce off edge of screen
 	onUpdate(() => {
-		if (cat.pos.x < 0) {
-			cat.pos.x = 0;
+		if (player.pos.x < 0) {
+			player.pos.x = 0;
 		}
-		if (cat.pos.x > width()) {
-			cat.pos.x = width();
+		if (player.pos.x > width()) {
+			player.pos.x = width();
+		}
+		if (player.pos.y < 0) {
+			player.pos.y = 0;
+		}
+		if (player.pos.y > height()) {
+			player.pos.y = height();
 		}
 	});
 });
