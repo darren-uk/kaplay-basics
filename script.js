@@ -12,8 +12,9 @@ kaplay({
 
 scene("game", () => {
 	setGravity(500);
+	setLayers(["bg", "obj", "ui"], "obj");
 
-	loadSprite("player", "./sprites/sonny-complete3.png", {
+	loadSprite("player", "./sprites/sheets/sonny-complete3.png", {
 		sliceX: 3,
 		sliceY: 3,
 		anims: {
@@ -22,9 +23,62 @@ scene("game", () => {
 			crouch: { from: 7, to: 7, loop: false },
 		},
 	});
-	loadSprite("grass", "./sprites/grass2.png");
-	loadSprite("bush", "./sprites/bush2.png");
-	loadSprite("house", "./sprites/house.png");
+	loadSprite("clouds", "./sprites/sheets/clouds.png", {
+		sliceX: 3,
+		sliceY: 1,
+		anims: {
+			small: { from: 0, to: 0 },
+			medium: { from: 1, to: 1 },
+			large: { from: 2, to: 2 },
+		},
+	});
+	loadSprite("grass", "./sprites/assets/grass2.png");
+	loadSprite("bush", "./sprites/assets/bush2.png");
+	loadSprite("house", "./sprites/assets/house.png");
+
+	loadSound("meow", "./sounds/cat-meow.mp3");
+	loadSound("purr", "./sounds/cat-purr.mp3");
+
+	//cloud animations
+	let cloudName = "";
+	function cloudType() {
+		const names = ["small", "medium", "large"];
+		cloudName = names[Math.floor(Math.random() * 3)];
+		return cloudName;
+	}
+	//wait random time between 0 - 4secs and loop
+	loop(4, () => {
+		// let cloudSpeed = Math.floor(Math.random() * max) + min;
+		let cloudSpeed = Math.floor(Math.random() * 15) + 5;
+		let cloudHeight = Math.floor(Math.random() * 80) + -30;
+		const cloud = add([
+			sprite("clouds"),
+			layer("bg"),
+			// pos(650, rand(80)),
+			pos(650, cloudHeight),
+			area(),
+			{
+				dir: LEFT,
+				speed: cloudSpeed,
+			},
+		]);
+		cloud.play(cloudType());
+		// change scale of clouds
+		if (cloudName == "large") {
+			cloud.scale = 2.1;
+		}
+		if (cloudName == "medium") {
+			cloud.scale = 1.2;
+		}
+		// destroy clouds when off edge of screen
+		cloud.onUpdate(() => {
+			cloud.move(cloud.dir.scale(cloud.speed));
+			if (cloud.pos.x < -60) {
+				destroy(cloud);
+			}
+		});
+	});
+
 	const house = add([sprite("house"), pos(0, -10), area()]);
 	const bush1 = add([sprite("bush"), pos(200, 30), area()]);
 	const bush2 = add([sprite("bush"), pos(-180, 30), area()]);
@@ -51,10 +105,10 @@ scene("game", () => {
 			"                    ",
 			"                    ",
 			"                    ",
+			"     xx         xx  ",
 			"                    ",
 			"                    ",
-			"                    ",
-			"xxxxxxxxxxx    xxxxx",
+			"xxxxxxxxxx     xxxxx",
 			"xxxxxxxxxxxxxxxxxxxx",
 		],
 		{
@@ -68,22 +122,6 @@ scene("game", () => {
 					body({ isStatic: true }),
 					"blank",
 				],
-
-				// "l": () => [
-				// 	sprite("grass-angle-left"),
-				// 	area({ shape: new Polygon([vec2(0), vec2(64, 64), vec2(0, 64)]) }),
-				// 	body({ isStatic: true }),
-				// 	"dirt",
-				// ],
-				// "r": () => [
-				// 	sprite("grass-angle-right"),
-				// 	area({
-				// 		shape: new Polygon([vec2(64, 0), vec2(64, 64), vec2(0, 64)]),
-				// 	}),
-				// 	body({ isStatic: true }),
-				// 	"dirt",
-				// ],
-				// "b": () => [sprite("blades"), area(), "blades"],
 			},
 		}
 	);
@@ -115,9 +153,11 @@ scene("game", () => {
 		}
 		if (key === "up" || key === "w") {
 			player.play("jump");
+			meow = play("meow", { volume: 0.3, speed: 0.9, loop: false });
 		}
 		if (key === "down" || key === "s") {
 			player.play("crouch");
+			purr = play("purr", { volume: 1, loop: false });
 		}
 	});
 
@@ -137,9 +177,11 @@ scene("game", () => {
 		if (key === "down" || key === "s") {
 			player.stop("crouch");
 			player.frame = 0;
+			purr.stop();
 		}
 	});
 
+	// Stops player moveing off edge of screen
 	onUpdate(() => {
 		if (player.pos.x < 0) {
 			player.pos.x = 0;
