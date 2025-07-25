@@ -35,9 +35,24 @@ scene("game", () => {
 	loadSprite("grass", "./sprites/assets/grass2.png");
 	loadSprite("bush", "./sprites/assets/bush2.png");
 	loadSprite("house", "./sprites/assets/house.png");
+	loadSprite("bird", "./sprites/assets/bird.png");
 
-	loadSound("meow", "./sounds/cat-meow.mp3");
+	loadSound("music", "./sounds/loop-music01.mp3");
 	loadSound("purr", "./sounds/cat-purr.mp3");
+	loadSound("pigeon", "./sounds/pigeon01.mp3");
+	let musicPlaying = false;
+	let music;
+
+	document.addEventListener("keydown", () => {
+		if (musicPlaying == true) {
+		} else {
+			musicPlaying = true;
+			music = play("music", { volume: 0.8, speed: 1, loop: true });
+		}
+	});
+
+	const score = add([text("score: 0"), pos(24, 24), layer("ui"), { value: 0 }]);
+	const level = add([text("level: 1"), pos(24, 52), layer("ui"), { value: 1 }]);
 
 	//cloud animations
 	let cloudName = "";
@@ -46,7 +61,7 @@ scene("game", () => {
 		cloudName = names[Math.floor(Math.random() * 3)];
 		return cloudName;
 	}
-	//wait random time between 0 - 4secs and loop
+	//wait 4secs and loop
 	loop(4, () => {
 		// let cloudSpeed = Math.floor(Math.random() * max) + min;
 		let cloudSpeed = Math.floor(Math.random() * 15) + 5;
@@ -83,11 +98,42 @@ scene("game", () => {
 	const bush1 = add([sprite("bush"), pos(200, 30), area()]);
 	const bush2 = add([sprite("bush"), pos(-180, 30), area()]);
 
+	let birdRate = 5;
+	let birdSpeed = 120;
+	// wait 2 secs
+
+	loop(birdRate, () => {
+		if (level.value == 1) {
+			let birdHeight = Math.floor(Math.random() * 300) + -30;
+			const bird = add([
+				sprite("bird"),
+				layer("obj"),
+				pos(650, birdHeight),
+				move(LEFT, birdSpeed),
+				area(),
+				"enemy",
+			]);
+			bird.onUpdate(() => {
+				if (bird.pos.x < -60) {
+					destroy(bird);
+				}
+				bird.onCollide("ground", (b) => {
+					destroy(bird);
+				});
+			});
+		} else {
+			return;
+		}
+	});
+
 	const player = add([
 		sprite("player"),
 		pos(50, 50),
 		body(),
-		area(),
+		area({
+			shape: new Rect(vec2(0, 24), 64, 40),
+		}),
+		layer("obj"),
 		offscreen({ destroy: true }),
 		"player",
 		{
@@ -105,7 +151,7 @@ scene("game", () => {
 			"                    ",
 			"                    ",
 			"                    ",
-			"     xx         xx  ",
+			"   zzzz        zzz  ",
 			"                    ",
 			"                    ",
 			"xxxxxxxxxx     xxxxx",
@@ -120,13 +166,24 @@ scene("game", () => {
 					opacity(0),
 					area(),
 					body({ isStatic: true }),
-					"blank",
+					// platformEffector(),
+					"ground",
+				],
+				"z": () => [
+					rect(32, 10),
+					opacity(0.2),
+					area(),
+					body({ isStatic: true }),
+					// platformEffector(),
+					"platform",
 				],
 			},
 		}
 	);
 
 	// ----------------------------------------------
+
+	// key presses
 	player.onKeyDown((key) => {
 		if (key === "right" || key === "d") {
 			player.move(player.speed, 0);
@@ -140,7 +197,7 @@ scene("game", () => {
 			player.move(0, player.speed);
 		}
 		if (key === "up" || key === "w") {
-			player.move(0, 0 - player.speed);
+			player.move(0, 0 - player.speed * 2);
 		}
 	});
 
@@ -153,7 +210,7 @@ scene("game", () => {
 		}
 		if (key === "up" || key === "w") {
 			player.play("jump");
-			meow = play("meow", { volume: 0.3, speed: 0.9, loop: false });
+			// meow = play("meow", { volume: 0.3, speed: 0.9, loop: false });
 		}
 		if (key === "down" || key === "s") {
 			player.play("crouch");
@@ -181,7 +238,7 @@ scene("game", () => {
 		}
 	});
 
-	// Stops player moveing off edge of screen
+	// Stops player moving off edge of screen
 	onUpdate(() => {
 		if (player.pos.x < 0) {
 			player.pos.x = 0;
@@ -196,6 +253,165 @@ scene("game", () => {
 			player.pos.y = height();
 		}
 	});
+
+	player.onCollide("enemy", (e) => {
+		e.use(body());
+		pigeon = play("pigeon", { volume: 1, speed: 1.1, loop: false });
+		score.value += 1;
+		score.text = "Score:" + score.value;
+		// stops repeat collisions of same enemy
+		e.untag("enemy");
+	});
+
+	player.onCollide("platform", (p) => {
+		// Only allow collision if player is falling and above the platform
+		if (player.vel.y > 0 && player.pos.y < p.pos.y) {
+			// Valid landing — do nothing, collision resolves
+			p.unuse("body");
+			wait(0.1, () => {
+				p.use(body({ isStatic: true }));
+			});
+			console.log("lower");
+		}
+	});
+
+	// SET LEVELS
+	// change birdRate = 5
+	// change birdSpeed = 120
+	// update level number
+	wait(15, () => {
+		// level 2
+		birdRate = 4;
+		birdSpeed = 180;
+		level.value += 1;
+		level.text = "Level:" + level.value;
+		music.speed = 1.1;
+		loop(birdRate, () => {
+			if (level.value == 2) {
+				let birdHeight = Math.floor(Math.random() * 300) + -30;
+				const bird = add([
+					sprite("bird"),
+					layer("obj"),
+					pos(650, birdHeight),
+					move(LEFT, birdSpeed),
+					area(),
+					"enemy",
+				]);
+				bird.onUpdate(() => {
+					if (bird.pos.x < -60) {
+						destroy(bird);
+					}
+					bird.onCollide("ground", (b) => {
+						destroy(bird);
+					});
+				});
+			} else {
+				return;
+			}
+		});
+	});
+	wait(30, () => {
+		// level 3
+		birdRate = 3;
+		birdSpeed = 220;
+		level.value += 1;
+		level.text = "Level:" + level.value;
+		music.speed = 1.2;
+		loop(birdRate, () => {
+			if (level.value == 3) {
+				let birdHeight = Math.floor(Math.random() * 300) + -30;
+				const bird = add([
+					sprite("bird"),
+					layer("obj"),
+					pos(650, birdHeight),
+					move(LEFT, birdSpeed),
+					area(),
+					"enemy",
+				]);
+				bird.onUpdate(() => {
+					if (bird.pos.x < -60) {
+						destroy(bird);
+					}
+					bird.onCollide("ground", (b) => {
+						destroy(bird);
+					});
+				});
+			} else {
+				return;
+			}
+		});
+	});
+	wait(45, () => {
+		// level 4
+		birdRate = 2;
+		birdSpeed = 250;
+		level.value += 1;
+		level.text = "Level:" + level.value;
+		music.speed = 1.3;
+		loop(birdRate, () => {
+			if (level.value == 4) {
+				let birdHeight = Math.floor(Math.random() * 300) + -30;
+				const bird = add([
+					sprite("bird"),
+					layer("obj"),
+					pos(650, birdHeight),
+					move(LEFT, birdSpeed),
+					area(),
+					"enemy",
+				]);
+				bird.onUpdate(() => {
+					if (bird.pos.x < -60) {
+						destroy(bird);
+					}
+					bird.onCollide("ground", (b) => {
+						destroy(bird);
+					});
+				});
+			} else {
+				return;
+			}
+		});
+	});
+	wait(60, () => {
+		// level 5
+		birdRate = 1;
+		birdSpeed = 300;
+		level.value += 1;
+		level.text = "Level:" + level.value;
+		music.speed = 1.5;
+		loop(birdRate, () => {
+			if (level.value == 5) {
+				let birdHeight = Math.floor(Math.random() * 300) + -30;
+				const bird = add([
+					sprite("bird"),
+					layer("obj"),
+					pos(650, birdHeight),
+					move(LEFT, birdSpeed),
+					area(),
+					"enemy",
+				]);
+				bird.onUpdate(() => {
+					if (bird.pos.x < -60) {
+						destroy(bird);
+					}
+					bird.onCollide("ground", (b) => {
+						destroy(bird);
+					});
+				});
+			} else {
+				return;
+			}
+		});
+	});
+	wait(75, () => {
+		// level 5
+		music.stop();
+		go("end", score.value);
+	});
 });
 
 go("game");
+
+scene("end", (score) => {
+	const endtext = add([text("Game over, your score is " + score), pos(24, 24)]);
+});
