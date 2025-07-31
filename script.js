@@ -1,77 +1,98 @@
-kaplay();
+kaplay({
+	background: [100, 100, 255], //light Blue
+	width: 800,
+	height: 600,
+});
 
-const k = kaplay();
-k.setGravity(500);
-k.setBackground(198,247,246);
-loadSprite("kat", "./sprites/kat.png");
-loadSprite("grass", "./sprites/grass.png");
-loadSprite("grass-angle-left", "./sprites/grass-angle-left.png");
-loadSprite("grass-angle-right", "./sprites/grass-angle-right.png");
-loadSprite("dirt", "./sprites/dirt.png");
-loadSprite("sky", "./sprites/sky.png");
+loadSprite("cat", "./sprites/kat.png");
 
-const cat = add([
-	sprite("kat"),
+const PLATFORM_Y_POSITIONS = [
+	500, //Bottom
+	350, //Middle
+	200, //Top
+];
+
+let currentPlatformIndex = 0; // start on bottom
+
+//ADD PLAYER
+const player = add([
+	sprite("cat"),
+	pos(width() / 2, PLATFORM_Y_POSITIONS[currentPlatformIndex]),
 	area(),
-    body(),
-    pos(50, 50),
-    rotate(),
-    anchor("center"),
-	"cat",
-	{ speed: 300 },
-]);
-const sky = add([
-	sprite("sky"),
-	z(-10),
-	pos(0, 0),
+	body(),
+	"player",
 ]);
 
-addLevel(
-	[
-		"                           ",
-		"                           ",
-		"                           ",
-		"                           ",
-		"                           ",
-		"                           ",
-        "                           ",
-        "=============#    ?========",
-		"++++++++++++++====+++++++++",
-		"+++++++++++++++++++++++++++",
-	],
-	{
-		tileWidth: 32,
-		tileHeight: 32,
-		tiles: {
-			"=": () => [sprite("grass"), area(), body({ isStatic: true }), scale(0.5)],
-			"+": () => [sprite("dirt"), area(), body({ isStatic: true }), scale(0.5)],
-			"#": () => [sprite("grass-angle-left"), area({ shape: new Polygon([vec2(0), vec2(64,64), vec2(0, 64)]) }), body({ isStatic: true }), scale(0.5)],
-			"?": () => [sprite("grass-angle-right"), area({ shape: new Polygon([vec2(64,0), vec2(64,64), vec2(0, 64)]) }), body({ isStatic: true }), scale(0.5)],
-		},
-	}
-);
-
-cat.onKeyDown((key) => {
-	if (key === "right" || key === "d") {
-		cat.move(cat.speed, 0);
-        cat.angle = 20;
-	}
-	if (key === "left" || key === "a") {
-		cat.move(0 - cat.speed, 0);
-		cat.angle = -20;
-	}
-	if (key === "down" || key === "s") {
-		cat.move(0, cat.speed);
-		cat.angle = 0;
-	}
-	if (key === "up" || key === "w") {
-		cat.move(0, 0 - cat.speed);
-		cat.angle = 0;
+// STAY ON SCREEN
+player.onUpdate(() => {
+	if (player.pos.y > height()) {
+		player.pos.y = height;
 	}
 });
 
-cat.onKeyRelease((key) => {
-	if (key === "right" || key === "left" || key === "d" || key === "a") {
-		cat.angle = 0;
+//MOVE PLAYER TO PLATFORM
+function moveToPlatform(targetIndex) {
+	if (targetIndex >= 0 && targetIndex < PLATFORM_Y_POSITIONS.length) {
+		currentPlatformIndex = targetIndex;
+
+		// // ANIMATE PLAYER MOVEMENT
+		tween(
+			player.pos, //CURRENT POSITION
+			vec2(player.pos.x, PLATFORM_Y_POSITIONS[currentPlatformIndex]), // MOVE TO POSITION
+			0.3, //DURATION
+			(p) => (player.pos = p),
+			easings.easeOutQuad
+		);
 	}
+}
+
+//ADD 'UP' BUTTON
+
+const upButton = add([
+	rect(100, 50),
+	pos(width() - 120, 50),
+	area(),
+	color(0, 200, 0), //green
+	"up_button", //TAG
+]);
+
+const upText = upButton.add([
+	text("UP", { size: 24 }),
+	pos(upButton.width / 2 - 20, upButton.height / 2 - 10), // relative to parent
+]);
+
+//ADD 'DOWN' BUTTON
+
+const downButton = add([
+	rect(100, 50),
+	pos(width() - 120, 120),
+	area(),
+	color(200, 0, 0), //red
+	"down_button", //TAG
+]);
+const downText = downButton.add([
+	text("DOWN", { size: 24 }),
+	pos(downButton.width / 2 - 20, downButton.height / 2 - 10), // relative to parent
+]);
+
+//BUTTON HANDLERS
+
+onClick("up_button", () => {
+	moveToPlatform(currentPlatformIndex + 1);
 });
+
+onClick("down_button", () => {
+	moveToPlatform(currentPlatformIndex - 1);
+});
+
+// DRAW PLATFORMS
+
+for (let i = 0; i < PLATFORM_Y_POSITIONS.length; i++) {
+	add([
+		rect(width(), 20),
+		pos(0, PLATFORM_Y_POSITIONS[i] + (64 - 10)),
+		color(100, 50, 0), // brown
+		area(),
+		"platform",
+	]);
+}
