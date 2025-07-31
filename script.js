@@ -1,15 +1,24 @@
+let screenWidth = window.screen.width;
+let screenHeight = window.screen.height;
+let padding = 28;
+
 kaplay({
 	background: [100, 100, 255], //light Blue
-	width: 800,
+	width: screenWidth - padding,
 	height: 600,
 });
 
 loadSprite("cat", "./sprites/kat.png");
 
+// const PLATFORM_Y_POSITIONS = [
+// 	500, //Bottom
+// 	350, //Middle
+// 	200, //Top
+// ];
 const PLATFORM_Y_POSITIONS = [
-	500, //Bottom
-	350, //Middle
-	200, //Top
+	screenHeight - 64 - screenHeight / 3, //Bottom
+	screenHeight - (screenHeight / 3) * 2, //Middle
+	screenHeight - (-64 + (screenHeight / 3) * 3), //Top
 ];
 
 let currentPlatformIndex = 0; // start on bottom
@@ -17,7 +26,7 @@ let currentPlatformIndex = 0; // start on bottom
 //ADD PLAYER
 const player = add([
 	sprite("cat"),
-	pos(width() / 2, PLATFORM_Y_POSITIONS[currentPlatformIndex]),
+	pos(50, PLATFORM_Y_POSITIONS[currentPlatformIndex]),
 	area(),
 	body(),
 	"player",
@@ -39,7 +48,7 @@ function moveToPlatform(targetIndex) {
 		tween(
 			player.pos, //CURRENT POSITION
 			vec2(player.pos.x, PLATFORM_Y_POSITIONS[currentPlatformIndex]), // MOVE TO POSITION
-			0.3, //DURATION
+			0.4, //DURATION
 			(p) => (player.pos = p),
 			easings.easeOutQuad
 		);
