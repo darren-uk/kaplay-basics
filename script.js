@@ -30,6 +30,10 @@ const player = add([
 	area(),
 	body(),
 	"player",
+	{
+		w: 61,
+		h: 58,
+	},
 ]);
 
 // STAY ON SCREEN
@@ -56,10 +60,9 @@ function moveToPlatform(targetIndex) {
 }
 
 //ADD 'UP' BUTTON
-
 const upButton = add([
 	rect(100, 50),
-	pos(width() - 120, 50),
+	pos(width() - 120, PLATFORM_Y_POSITIONS[2]),
 	area(),
 	color(0, 200, 0), //green
 	"up_button", //TAG
@@ -67,21 +70,22 @@ const upButton = add([
 
 const upText = upButton.add([
 	text("UP", { size: 24 }),
-	pos(upButton.width / 2 - 20, upButton.height / 2 - 10), // relative to parent
+	anchor("center"),
+	pos(upButton.width / 2, upButton.height / 2), // relative to parent
 ]);
 
 //ADD 'DOWN' BUTTON
-
 const downButton = add([
 	rect(100, 50),
-	pos(width() - 120, 120),
+	pos(width() - 120, 80 + PLATFORM_Y_POSITIONS[2]),
 	area(),
 	color(200, 0, 0), //red
 	"down_button", //TAG
 ]);
 const downText = downButton.add([
 	text("DOWN", { size: 24 }),
-	pos(downButton.width / 2 - 20, downButton.height / 2 - 10), // relative to parent
+	anchor("center"),
+	pos(downButton.width / 2, downButton.height / 2), // relative to parent
 ]);
 
 //BUTTON HANDLERS
