@@ -263,9 +263,10 @@ scene("game", () => {
 		e.untag("enemy");
 	});
 
+	// Allow passthrough
 	player.onCollide("platform", (p) => {
 		// Only allow collision if player is falling and above the platform
-		if (player.vel.y > 0 && player.pos.y < p.pos.y) {
+		if (player.vel.y > 0) {
 			// Valid landing — do nothing, collision resolves
 			p.unuse("body");
 			wait(0.1, () => {
