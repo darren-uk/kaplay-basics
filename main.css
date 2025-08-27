@@ -88,11 +88,5 @@ body {
 	height: 100dvh;
 	min-height: 100vh;
 	min-height: 100dvh;
-	background-color: #abbac7;
-}
-
-#mycanvas {
-	width: 640px;
-	height: 384px;
-	background: rgb(158, 158, 217);
+	background-color: #676868;
 }
