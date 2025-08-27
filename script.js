@@ -1,11 +1,21 @@
 let screenWidth = window.screen.width;
 let screenHeight = window.screen.height;
-let padding = 28;
+let padding = 20;
+
+// limit game width to max 500px
+if (screenWidth > 500) {
+	screenWidth = 500;
+}
+
+// limit game height to 600px
+if (screenHeight > 600) {
+	screenHeight = 600;
+}
 
 kaplay({
 	background: [100, 100, 255], //light Blue
 	width: screenWidth - padding,
-	height: 600,
+	height: screenHeight - padding,
 });
 
 loadSprite("cat", "./sprites/kat.png");
