@@ -81,6 +81,19 @@ scene("game", () => {
 		setCamPos(player.pos);
 	});
 
+	// Allow Passthrough
+
+	player.onCollide("platform", (p) => {
+		// If player is jumping set platform to allow passthrough
+		if (player.vel.y > 0) {
+			p.unuse("body");
+			// wait and set platform to disallow passthrough
+			wait(0.1, () => {
+				p.use(body({ isStatic: true }));
+			});
+		}
+	});
+
 	// ADD LEVEL
 	addLevel(
 		[
