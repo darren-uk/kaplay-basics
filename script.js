@@ -46,16 +46,16 @@ scene("game", () => {
 	function playerControls() {
 		player.onKeyDown((key) => {
 			if (key === "right" || key === "d") {
-				player.move(player.speed, 0);
+				setMovement(player.speed, 0);
 			}
 			if (key === "left" || key === "a") {
-				player.move(0 - player.speed, 0);
+				setMovement(0 - player.speed, 0);
 			}
 			if (key === "down" || key === "s") {
-				player.move(0, player.speed);
+				setMovement(0, player.speed);
 			}
 			if (key === "up" || key === "w") {
-				player.move(0, 0 - player.speed * 2);
+				setMovement(0, 0 - player.speed * 2);
 			}
 		});
 
