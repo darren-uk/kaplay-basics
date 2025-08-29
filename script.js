@@ -1,37 +1,38 @@
 // SET SCREEN DIMENSIONS
 const gamePadding = 40;
-let gameWidth = screen.width - gamePadding;
-let gameHeight = 0;
+let gameWidth = screen.width;
+// let gameHeight = 0;
+let gameHeight = screen.height;
 let startPositionX = 100;
-let startPositionY = 0;
+let startPositionY = 50;
 
-if (gameWidth > 360) {
-	// set width to 500px
-	// set ratio to 16/9
-	gameWidth = 500;
-	let ratio = gameWidth / 16;
-	gameHeight = ratio * 9 - gamePadding;
-} else {
-	// set height to 840
-	gameHeight = 500 - gamePadding;
-}
+// if (gameWidth > 300) {
+// 	// set width to 500px
+// 	// set ratio to 16/9
+// 	gameWidth = 500;
+// 	let ratio = gameWidth / 16;
+// 	gameHeight = ratio * 9 - gamePadding;
+// } else {
+// 	// set height to 840
+// 	// gameHeight = 500 - gamePadding;
+// 	gameHeight = screen.height - gamePadding;
+// }
 
 kaplay({
 	width: gameWidth,
 	height: gameHeight,
 	canvas: document.querySelector("#mycanvas"),
 	background: [136, 158, 189],
-	gravity: 500,
 });
 
 scene("game", () => {
-	setGravity(500);
-	setLayers(["bg", "obj", "ui"], "obj");
+	setLayers(["bg", "obj", "ui", "controls"], "obj");
 
 	loadSprite("player", "./sprites/game-character.png");
 	const player = add([
 		sprite("player"),
 		pos(startPositionX, startPositionY),
+		scale(0.5),
 		area(),
 		body(),
 		anchor("center"),
@@ -57,6 +58,53 @@ scene("game", () => {
 				player.move(0, 0 - player.speed * 2);
 			}
 		});
+
+		// TOUCH CONTROLS
+
+		const touchButtonLeft = document.getElementById("btn-left");
+		const touchButtonRight = document.getElementById("btn-right");
+		const touchButtonUp = document.getElementById("btn-up");
+		const touchButtonDown = document.getElementById("btn-down");
+
+		let movementDirection = { x: 0, y: 0 };
+
+		function setMovement(x, y) {
+			movementDirection.x = x;
+			movementDirection.y = y;
+		}
+
+		function stopMovement() {
+			movementDirection.x = 0;
+			movementDirection.y = 0;
+		}
+
+		onUpdate("player", (player) => {
+			if (movementDirection.x !== 0 || movementDirection.y !== 0) {
+				player.move(movementDirection.x, movementDirection.y);
+				console.log("player is moving: " + movementDirection);
+			}
+		});
+
+		//----------
+		touchButtonLeft.addEventListener("click", () => {
+			setMovement(0 - player.speed, 0);
+		});
+		touchButtonLeft.addEventListener("touchend", stopMovement);
+		//-----------
+		touchButtonRight.addEventListener("click", () =>
+			setMovement(player.speed, 0)
+		);
+		touchButtonRight.addEventListener("touchend", stopMovement);
+		//-------------
+		touchButtonUp.addEventListener("click", () =>
+			setMovement(0, 0 - player.speed * 2)
+		);
+		touchButtonUp.addEventListener("touchend", stopMovement);
+		//---------------
+		touchButtonDown.addEventListener("click", () =>
+			setMovement(0, player.speed)
+		);
+		touchButtonDown.addEventListener("touchend", stopMovement);
 	}
 	playerControls();
 
@@ -77,60 +125,34 @@ scene("game", () => {
 			player.pos = vec2(startPositionX, startPositionY);
 		}
 	});
-	player.onPhysicsResolve(() => {
-		setCamPos(player.pos);
-	});
-
-	// Allow Passthrough
-
-	player.onCollide("platform", (p) => {
-		// If player is jumping set platform to allow passthrough
-		if (player.vel.y > 0) {
-			p.unuse("body");
-			// wait and set platform to disallow passthrough
-			wait(0.1, () => {
-				p.use(body({ isStatic: true }));
-			});
-		}
-	});
 
 	// ADD LEVEL
 	addLevel(
 		[
-			"                    ",
-			"                    ",
-			"                    ",
-			"                    ",
-			"   zzzz        zzz  ",
-			"                    ",
-			"                    ",
-			"                    ",
-			"                    ",
+			"xxxxxxxxxxxxxxxxxxxx",
 			"x                  x",
-			"xxxxxxxxxx     xxxxx",
+			"xxxxxxxx       xxxxx",
+			"x                  x",
+			"x  xxxxxxxxxxxxxxxxx",
+			"x                  x",
+			"xxxxxxxx    xxxxxxxx",
+			"x                  x",
+			"x     xxxxxxxx     x",
+			"x                  x",
+			"x                  x",
 			"xxxxxxxxxxxxxxxxxxxx",
 		],
 		{
 			tileWidth: 32,
 			tileHeight: 32,
 			tiles: {
-				// "p": () => [sprite("player"), area(), body()],
 				"x": () => [
 					rect(32, 32),
 					opacity(1),
 					color("#2b7a2b"),
 					area(),
 					body({ isStatic: true }),
-					// platformEffector(),
-					"ground",
-				],
-				"z": () => [
-					rect(32, 10),
-					opacity(0.2),
-					area(),
-					body({ isStatic: true }),
-					// platformEffector(),
-					"platform",
+					"wall",
 				],
 			},
 		}

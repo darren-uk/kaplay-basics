@@ -10,9 +10,18 @@
 </head>
 
 <body>
+    <div class="game-container">
+        <canvas id="mycanvas"></canvas>
 
-    <canvas id="mycanvas"></canvas>
+        <!-- Invisible touch zones -->
+        <div class="touch-zones">
+            <div id="btn-left" class="touch-zone" style="grid-area: left;background:rgba(0, 0, 255, 0.132);"></div>
+            <div id="btn-right" class="touch-zone" style="grid-area: right;background:rgba(0, 128, 0, 0.178);"></div>
+            <div id="btn-up" class="touch-zone" style="grid-area: up;background:rgba(255, 0, 0, 0.13);"></div>
+            <div id="btn-down" class="touch-zone" style="grid-area: down;background:rgba(255, 0, 0, 0.13);"></div>
+        </div>
 
+    </div>
     <!-- Kaplay -->
     <script src="./kaplay/kaplay.js"></script>
     <script src="script.js"></script>

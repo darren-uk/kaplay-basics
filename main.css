@@ -90,3 +90,37 @@ body {
 	min-height: 100dvh;
 	background-color: #676868;
 }
+
+.game-container {
+	position: relative;
+	width: 100vw;
+	height: 100vh;
+}
+
+#mycanvas {
+	position: absolute;
+	content: "";
+	margin: auto;
+}
+
+.touch-zones {
+	position: absolute;
+	content: "";
+	width: 100%;
+	height: 100%;
+	z-index: 10;
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	grid-template-rows: 1fr 1fr 1fr;
+	gap: 0px 0px;
+	grid-template-areas:
+		"up up"
+		"left right"
+		"down down";
+}
+
+.touch-zone {
+	width: 100%;
+	height: 100%;
+	background: rgba(255, 192, 203, 0.253);
+}
