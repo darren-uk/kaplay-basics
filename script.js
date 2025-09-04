@@ -2,8 +2,8 @@
 const gamePadding = 40;
 let gameWidth = screen.width - gamePadding;
 let gameHeight = 0;
-let startPositionX = 100;
-let startPositionY = 0;
+let startPositionX = 150;
+let startPositionY = -50;
 
 if (gameWidth > 360) {
 	// set width to 500px
@@ -17,18 +17,17 @@ if (gameWidth > 360) {
 }
 
 kaplay({
-	width: gameWidth,
-	height: gameHeight,
+	// width: 480,
+	// height: 320,
 	canvas: document.querySelector("#mycanvas"),
-	background: [136, 158, 189],
-	gravity: 500,
+	background: [76, 133, 185],
 });
 
 scene("game", () => {
 	setGravity(500);
 	setLayers(["bg", "obj", "ui"], "obj");
 
-	loadSprite("player", "./sprites/game-character.png");
+	loadSprite("player", "./sprites/player1.png");
 	const player = add([
 		sprite("player"),
 		pos(startPositionX, startPositionY),
@@ -40,6 +39,38 @@ scene("game", () => {
 			speed: 300,
 		},
 	]);
+	loadSprite("map", "./assets/map-transparent.png");
+	const map = add([sprite("map"), pos(0, 0), "map"]);
+
+	// ADD LEVEL
+	async function main() {
+		const mapData = await (await fetch("./assets/map.json")).json();
+
+		const colliderLayer = mapData.layers.find((l) => l.name === "colliders");
+		console.log("Collider layer:", colliderLayer);
+
+		for (const layer of mapData.layers) {
+			if (layer.type === "tilelayer") continue;
+
+			if (layer.name === "colliders") {
+				for (const object of layer.objects) {
+					const collider = map.add([
+						rect(object.width, object.height),
+						pos(object.x, object.y),
+						area(),
+						body({ isStatic: true }),
+						color(RED),
+						opacity(0),
+						"wall",
+					]);
+				}
+
+				continue;
+			}
+		}
+	}
+
+	main();
 
 	// set controls
 	function playerControls() {
@@ -65,12 +96,13 @@ scene("game", () => {
 		// Set the viewport center to player.pos
 		// camera points to anchor point of player
 		setCamPos(player.pos);
+		setCamScale(2);
 
 		// DESTROY player if in freefall
 
 		if (getCamPos().y > 2000) {
 			//camera flashes red
-			camFlash(rgb(255, 0, 0), 0.3);
+			flash(rgb(255, 0, 0), 0.3);
 			//camera shakes
 			shake(30);
 			//return player to original position
@@ -83,58 +115,22 @@ scene("game", () => {
 
 	// Allow Passthrough
 
-	player.onCollide("platform", (p) => {
-		// If player is jumping set platform to allow passthrough
-		if (player.vel.y > 0) {
-			p.unuse("body");
-			// wait and set platform to disallow passthrough
-			wait(0.1, () => {
-				p.use(body({ isStatic: true }));
-			});
-		}
-	});
+	// player.onCollide("platform", (p) => {
+	// 	// If player is jumping set platform to allow passthrough
+	// 	if (player.vel.y > 0) {
+	// 		p.unuse("body");
+	// 		// wait and set platform to disallow passthrough
+	// 		wait(0.1, () => {
+	// 			p.use(body({ isStatic: true }));
+	// 		});
+	// 	}
+	// });
 
-	// ADD LEVEL
-	addLevel(
-		[
-			"                    ",
-			"                    ",
-			"                    ",
-			"                    ",
-			"   zzzz        zzz  ",
-			"                    ",
-			"                    ",
-			"                    ",
-			"                    ",
-			"x                  x",
-			"xxxxxxxxxx     xxxxx",
-			"xxxxxxxxxxxxxxxxxxxx",
-		],
-		{
-			tileWidth: 32,
-			tileHeight: 32,
-			tiles: {
-				// "p": () => [sprite("player"), area(), body()],
-				"x": () => [
-					rect(32, 32),
-					opacity(1),
-					color("#2b7a2b"),
-					area(),
-					body({ isStatic: true }),
-					// platformEffector(),
-					"ground",
-				],
-				"z": () => [
-					rect(32, 10),
-					opacity(0.2),
-					area(),
-					body({ isStatic: true }),
-					// platformEffector(),
-					"platform",
-				],
-			},
-		}
-	);
+	const allObjects = get("*");
+	console.log("Total objects:", allObjects.length);
+	allObjects.forEach((obj) => {
+		console.log(obj);
+	});
 });
 
 go("game");
