@@ -28,6 +28,8 @@ scene("game", () => {
 	setLayers(["bg", "obj", "ui"], "obj");
 
 	loadSprite("player", "./sprites/player1.png");
+	loadSprite("map", "./assets/map-transparent.png");
+
 	const player = add([
 		sprite("player"),
 		pos(startPositionX, startPositionY),
@@ -39,18 +41,22 @@ scene("game", () => {
 			speed: 300,
 		},
 	]);
-	loadSprite("map", "./assets/map-transparent.png");
 	const map = add([sprite("map"), pos(0, 0), "map"]);
 
 	// ADD LEVEL
 	async function main() {
 		const mapData = await (await fetch("./assets/map.json")).json();
 
-		const colliderLayer = mapData.layers.find((l) => l.name === "colliders");
-		console.log("Collider layer:", colliderLayer);
-
 		for (const layer of mapData.layers) {
 			if (layer.type === "tilelayer") continue;
+
+			if (layer.name === "positions") {
+				for (const object of layer.objects) {
+					startPositionX = object.x;
+					startPositionY = object.y;
+				}
+				continue;
+			}
 
 			if (layer.name === "colliders") {
 				for (const object of layer.objects) {
@@ -125,12 +131,6 @@ scene("game", () => {
 	// 		});
 	// 	}
 	// });
-
-	const allObjects = get("*");
-	console.log("Total objects:", allObjects.length);
-	allObjects.forEach((obj) => {
-		console.log(obj);
-	});
 });
 
 go("game");
