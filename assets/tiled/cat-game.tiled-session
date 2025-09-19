@@ -1,0 +1,47 @@
+{
+    "Map/SizeTest": {
+        "height": 4300,
+        "width": 2
+    },
+    "activeFile": "map.json",
+    "expandedProjectPaths": [
+    ],
+    "fileStates": {
+        "": {
+            "scaleInDock": 1
+        },
+        "map.json": {
+            "scale": 1.5,
+            "selectedLayer": 1,
+            "viewCenter": {
+                "x": 332.3333333333333,
+                "y": 238.99999999999997
+            }
+        },
+        "map.json#bush": {
+            "scaleInDock": 1
+        },
+        "map.json#grass": {
+            "scaleInDock": 1
+        },
+        "map.json#houses": {
+            "scaleInDock": 1
+        }
+    },
+    "last.imagePath": "C:/Users/darre/Desktop/GITHUB - Repos/kaplay-basics/assets/tiled",
+    "map.height": 15,
+    "map.lastUsedFormat": "json",
+    "map.width": 20,
+    "openFiles": [
+        "map.json"
+    ],
+    "project": "cat-game.tiled-project",
+    "recentFiles": [
+        "map.json"
+    ],
+    "tileset.embedInMap": true,
+    "tileset.tileSize": {
+        "height": 384,
+        "width": 640
+    }
+}
