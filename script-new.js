@@ -17,14 +17,14 @@ scene("game", () => {
 
 	// ADD LEVEL
 	async function main() {
-		const mapData = await (await fetch("./assets/map.json")).json();
+		const mapData = await (await fetch("./assets/map02.json")).json();
 
 		// SCENE GLOBAL VARIABLES
 		let startPositionX = 0;
 		let startPositionY = 0;
 
 		// LOAD SPRITES
-		loadSprite("player", "./sprites/sheets/sonny-complete3.png", {
+		loadSprite("player", "./sprites/sheets/sonny-complete4.png", {
 			sliceX: 3,
 			sliceY: 3,
 			anims: {
@@ -33,7 +33,7 @@ scene("game", () => {
 				crouch: { from: 7, to: 7, loop: false },
 			},
 		});
-		loadSprite("houses", "./assets/backdrop.png");
+		loadSprite("houses", "./assets/backdrop02.png");
 		loadSprite("foreground", "./assets/foreground.png");
 
 		//ADD graphics
@@ -75,8 +75,12 @@ scene("game", () => {
 						body({ isStatic: true }),
 						color(RED),
 						opacity(0),
-						"wall",
+						"block",
 					]);
+
+					if (object.type == "platform") {
+						collider.tag("platform");
+					}
 				}
 
 				continue;
@@ -92,8 +96,8 @@ scene("game", () => {
 			area({
 				shape: new Rect(vec2(0, 24), 64, 40),
 			}),
+			// rect (offset,width,height) offset uses vec2 to make it relative to the sprite anchor point
 			body(),
-			anchor("center"),
 			offscreen({ destroy: true }),
 			layer("obj"),
 			"player",
@@ -101,6 +105,8 @@ scene("game", () => {
 				speed: 300,
 			},
 		]);
+
+		let isCrouching = false;
 
 		// SET CONTROLS
 		function playerControls() {
@@ -117,8 +123,9 @@ scene("game", () => {
 					player.move(0, player.speed);
 				}
 				if (key === "up" || key === "w") {
-					player.move(0, 0 - player.speed * 2);
+					player.move(0, 0 - player.speed * 1.6);
 				}
+				// player.speed * 2 determines jump height
 			});
 
 			player.onKeyPress((key) => {
@@ -133,6 +140,7 @@ scene("game", () => {
 				}
 				if (key === "down" || key === "s") {
 					player.play("crouch");
+					isCrouching = true;
 				}
 			});
 
@@ -152,6 +160,7 @@ scene("game", () => {
 				if (key === "down" || key === "s") {
 					player.stop("crouch");
 					player.frame = 0;
+					isCrouching = false;
 				}
 			});
 
@@ -169,9 +178,36 @@ scene("game", () => {
 				if (player.pos.y > height()) {
 					player.pos.y = height();
 				}
+
+				// allow movement through platform when crouching
+				const platforms = map.get("platform");
+				platforms.forEach((p) => {
+					if (isCrouching) {
+						p.unuse("body");
+					}
+				});
 			});
 		}
 		playerControls();
+
+		//collison effects
+
+		// Allow passthrough
+		player.onCollide("platform", (p) => {
+			// if player is moving and below platform
+			if (player.vel.y > 0 || player.pos.y > p.pos.y) {
+				// remove platform collision detection
+				p.unuse("body");
+				//wait and replace collision detection
+				wait(0.1, () => {
+					p.use(body({ isStatic: true }));
+				});
+			}
+			// if player is above platform , platform is solid
+			if (player.pos.y < p.pos.y) {
+				p.use(body({ isStatic: true }));
+			}
+		});
 	} // END OF MAIN()
 
 	main();

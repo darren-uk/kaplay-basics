@@ -3,9 +3,10 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "map.json",
+    "activeFile": "",
     "expandedProjectPaths": [
     ],
+    "file.lastUsedOpenFilter": "All Files (*)",
     "fileStates": {
         "": {
             "scaleInDock": 1
@@ -33,7 +34,6 @@
     "map.lastUsedFormat": "json",
     "map.width": 20,
     "openFiles": [
-        "map.json"
     ],
     "project": "cat-game.tiled-project",
     "recentFiles": [
