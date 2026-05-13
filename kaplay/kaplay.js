@@ -1,3 +1,5 @@
+// Version 3001.0.19
+
 "use strict";
 var kaplay = (() => {
 	var yr = Object.defineProperty;

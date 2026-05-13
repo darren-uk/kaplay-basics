@@ -24,10 +24,11 @@ scene("game", () => {
 		let startPositionY = 0;
 
 		// LOAD SPRITES
-		loadSprite("player", "./sprites/sheets/sonny-complete4.png", {
+		loadSprite("player", "./sprites/sheets/sonny-complete5.png", {
 			sliceX: 3,
-			sliceY: 3,
+			sliceY: 4,
 			anims: {
+				idle: { from: 9, to: 11, loop: true, pingpong: true, speed: 4 },
 				walk: { from: 0, to: 5, loop: true },
 				jump: { from: 6, to: 6, loop: false },
 				crouch: { from: 7, to: 7, loop: false },
@@ -35,6 +36,13 @@ scene("game", () => {
 		});
 		loadSprite("houses", "./assets/backdrop02.png");
 		loadSprite("foreground", "./assets/foreground.png");
+		loadSprite("bird", "./sprites/sheets/bird-fly.png", {
+			sliceX: 2,
+			sliceY: 2,
+			anims: {
+				fly: { from: 0, to: 3, loop: true },
+			},
+		});
 
 		//ADD graphics
 		const houses = add([sprite("houses"), pos(0, 0), layer("backdrop")]);
@@ -90,9 +98,9 @@ scene("game", () => {
 		// ADD PLAYER SPRITE AFTER LOADING COLLIDERS FOR START POSITIONS TO LOAD
 
 		const player = add([
-			sprite("player"),
+			sprite("player", { anim: "idle" }),
 			// pos(startPositionX, startPositionY),
-			pos(50, 50),
+			pos(20, 200),
 			area({
 				shape: new Rect(vec2(0, 24), 64, 40),
 			}),
@@ -105,6 +113,24 @@ scene("game", () => {
 				speed: 300,
 			},
 		]);
+
+		// Add bird
+		const bird = add([
+			sprite("bird", { anim: "fly" }),
+			// pos(-64, 20),
+			area(),
+			// body(),
+			layer("obj"),
+			animate(),
+			scale(0.6),
+			"enemy",
+		]);
+
+		bird.animate("pos", [vec2(-64, 10), vec2(width(), 160)], { duration: 5 });
+
+		player.onCollide("enemy", (enemy) => {
+			destroy(enemy);
+		});
 
 		let isCrouching = false;
 
@@ -162,6 +188,7 @@ scene("game", () => {
 					player.frame = 0;
 					isCrouching = false;
 				}
+				player.play("idle");
 			});
 
 			// Stops player moving off edge of screen
