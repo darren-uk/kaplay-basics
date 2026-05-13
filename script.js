@@ -1,77 +1,82 @@
-kaplay();
-
-const k = kaplay();
-k.setGravity(500);
-k.setBackground(198,247,246);
-loadSprite("kat", "./sprites/kat.png");
-loadSprite("grass", "./sprites/grass.png");
-loadSprite("grass-angle-left", "./sprites/grass-angle-left.png");
-loadSprite("grass-angle-right", "./sprites/grass-angle-right.png");
-loadSprite("dirt", "./sprites/dirt.png");
-loadSprite("sky", "./sprites/sky.png");
-
-const cat = add([
-	sprite("kat"),
-	area(),
-    body(),
-    pos(50, 50),
-    rotate(),
-    anchor("center"),
-	"cat",
-	{ speed: 300 },
-]);
-const sky = add([
-	sprite("sky"),
-	z(-10),
-	pos(0, 0),
-]);
-
-addLevel(
-	[
-		"                           ",
-		"                           ",
-		"                           ",
-		"                           ",
-		"                           ",
-		"                           ",
-        "                           ",
-        "=============#    ?========",
-		"++++++++++++++====+++++++++",
-		"+++++++++++++++++++++++++++",
-	],
-	{
-		tileWidth: 32,
-		tileHeight: 32,
-		tiles: {
-			"=": () => [sprite("grass"), area(), body({ isStatic: true }), scale(0.5)],
-			"+": () => [sprite("dirt"), area(), body({ isStatic: true }), scale(0.5)],
-			"#": () => [sprite("grass-angle-left"), area({ shape: new Polygon([vec2(0), vec2(64,64), vec2(0, 64)]) }), body({ isStatic: true }), scale(0.5)],
-			"?": () => [sprite("grass-angle-right"), area({ shape: new Polygon([vec2(64,0), vec2(64,64), vec2(0, 64)]) }), body({ isStatic: true }), scale(0.5)],
-		},
-	}
-);
-
-cat.onKeyDown((key) => {
-	if (key === "right" || key === "d") {
-		cat.move(cat.speed, 0);
-        cat.angle = 20;
-	}
-	if (key === "left" || key === "a") {
-		cat.move(0 - cat.speed, 0);
-		cat.angle = -20;
-	}
-	if (key === "down" || key === "s") {
-		cat.move(0, cat.speed);
-		cat.angle = 0;
-	}
-	if (key === "up" || key === "w") {
-		cat.move(0, 0 - cat.speed);
-		cat.angle = 0;
-	}
+kaplay({
+	global: true,
+	width: 640,
+	height: 640,
+	canvas: document.querySelector("#canvas"),
+	background: [198, 247, 246],
 });
 
-cat.onKeyRelease((key) => {
-	if (key === "right" || key === "left" || key === "d" || key === "a") {
-		cat.angle = 0;
+// ADD LEVEL
+async function main() {
+	const mapData = await (await fetch("./map.json")).json();
+	console.log("map loaded");
+
+	//load sprites
+	loadSprite("map", "./sprites/level-bg-transparent.png");
+	loadSprite("player", "./sprites/player.png");
+	loadSprite("enemy", "./sprites/enemy.png");
+
+	// ADD MAP SPRITE BEFORE LOADING COLLIDERS
+	const map = add([sprite("map"), pos(0, 0), "map"]);
+
+	// LOAD COLLIDERS
+
+	for (const layer of mapData.layers) {
+		if (layer.type === "tilelayer") continue;
+
+		if (layer.name === "walls") {
+			for (const object of layer.objects) {
+				const collider = map.add([
+					rect(object.width, object.height),
+					pos(object.x, object.y),
+					area(),
+					body({ isStatic: true }),
+					color(RED),
+					opacity(0),
+					"wall",
+				]);
+			}
+
+			continue;
+		}
 	}
-});
+
+	// ADD PLAYER SPRITE AFTER LOADING COLLIDERS FOR START POSITIONS TO LOAD
+	const player = add([
+		sprite("player"),
+		area(),
+		body(),
+		pos(128, 448),
+		"player",
+		{ speed: 300 },
+	]);
+
+	const enemy = add([
+		sprite("enemy"),
+		area(),
+		body(),
+		pos(512, 448),
+		"enemy",
+		{ speed: 200 },
+	]);
+
+	// SET CONTROLS
+	function playerControls() {
+		player.onKeyDown((key) => {
+			if (key === "right" || key === "d") {
+				player.move(player.speed, 0);
+			}
+			if (key === "left" || key === "a") {
+				player.move(0 - player.speed, 0);
+			}
+			if (key === "down" || key === "s") {
+				player.move(0, player.speed);
+			}
+			if (key === "up" || key === "w") {
+				player.move(0, 0 - player.speed);
+			}
+		});
+	}
+	playerControls();
+}
+main();
