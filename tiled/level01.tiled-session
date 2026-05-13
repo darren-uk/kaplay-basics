@@ -1,22 +1,35 @@
 {
-    "activeFile": "",
+    "activeFile": "level01.xml",
     "expandedProjectPaths": [
     ],
     "fileStates": {
         "bg.tsx": {
             "scaleInDock": 1,
             "scaleInEditor": 1
+        },
+        "level01.xml": {
+            "scale": 1.2646875,
+            "selectedLayer": 2,
+            "viewCenter": {
+                "x": 320.2372127501853,
+                "y": 319.8418581665431
+            }
+        },
+        "level01.xml#bg": {
+            "scaleInDock": 1
         }
     },
-    "last.exportedFilePath": "C:/Users/darre/Desktop/GITHUB - Repos/kaplay-basics/tiled",
+    "last.exportedFilePath": "C:/Users/darre/Desktop/GITHUB - Repos/kaplay-basics",
     "last.imagePath": "C:/Users/darre/Desktop/GITHUB - Repos/kaplay-basics/sprites",
     "map.lastUsedExportFilter": "JSON map files (*.tmj *.json)",
     "map.lastUsedFormat": "tmx",
     "map.width": 20,
     "openFiles": [
+        "level01.xml"
     ],
     "project": "level01.tiled-project",
     "recentFiles": [
+        "level01.xml",
         "bg.tsx"
     ],
     "tileset.embedInMap": true,

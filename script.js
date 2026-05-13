@@ -8,7 +8,7 @@ kaplay({
 
 // ADD LEVEL
 async function main() {
-	const mapData = await (await fetch("./map.json")).json();
+	const mapData = await (await fetch("./map02.json")).json();
 	console.log("map loaded");
 
 	//load sprites
@@ -20,6 +20,8 @@ async function main() {
 	const map = add([sprite("map"), pos(0, 0), "map"]);
 
 	// LOAD COLLIDERS
+
+	const nav = new NavMesh();
 
 	for (const layer of mapData.layers) {
 		if (layer.type === "tilelayer") continue;
@@ -36,9 +38,30 @@ async function main() {
 					"wall",
 				]);
 			}
-
 			continue;
 		}
+
+		// if (layer.name === "path") {
+		// 	for (const object of layer.objects) {
+		// 		// Add polygons for navmesh
+		// 		nav.addPolygon([
+		// 			vec2(object.x, object.y),
+		// 			vec2(object.x + object.width, object.y),
+		// 			vec2(object.x + object.width, object.y + object.height),
+		// 			vec2(object.x, object.y + object.height),
+		// 		]);
+
+		// 		// add visual reference
+		// 		const path = map.add([
+		// 			rect(object.width, object.height),
+		// 			pos(object.x, object.y),
+		// 			color(GREEN),
+		// 			opacity(0.1),
+		// 			"path",
+		// 		]);
+		// 	}
+		// 	continue;
+		// }
 	}
 
 	// ADD PLAYER SPRITE AFTER LOADING COLLIDERS FOR START POSITIONS TO LOAD
@@ -46,19 +69,87 @@ async function main() {
 		sprite("player"),
 		area(),
 		body(),
+		anchor(vec2(0, 0)),
 		pos(128, 448),
 		"player",
-		{ speed: 300 },
-	]);
-
-	const enemy = add([
-		sprite("enemy"),
-		area(),
-		body(),
-		pos(512, 448),
-		"enemy",
 		{ speed: 200 },
 	]);
+
+	//spawn enemy
+
+	// const enemy = add([
+	// 	sprite("enemy"),
+	// 	area(),
+	// 	body(),
+	// 	pos(512, 448),
+	// 	"enemy",
+	// 	{ speed: 200 },
+	// ]);
+
+	function addEnemy(p) {
+		const enemy = add([
+			{
+				add() {
+					this.onObjectsSpotted((objects) => {
+						const playerSeen = objects.some((o) => o.is("player"));
+						if (playerSeen) {
+							enemy.action = "pursuit";
+							enemy.waypoints = null;
+						}
+					});
+					this.onPatrolFinished(() => {
+						enemy.action = "observe";
+					});
+				},
+			},
+			pos(p),
+			sprite("enemy"),
+			anchor(vec2(0, 0)),
+			area(),
+			body(),
+			sentry(
+				{ include: "player" },
+				{
+					lineOfSight: true,
+					raycastExclude: ["enemy"],
+				},
+			),
+			patrol({ speed: 100 }),
+			pathfinder({
+				graph: nav,
+				navigationOpt: {
+					type: "edges",
+				},
+			}),
+			"enemy",
+			{ action: "observing", waypoint: null },
+		]);
+		return enemy;
+	}
+
+	addEnemy(vec2(512, 448));
+
+	let path;
+	onUpdate("enemy", (enemy) => {
+		switch (enemy.action) {
+			case "observe": {
+				break;
+			}
+			case "pursuit": {
+				if (enemy.hasLineOfSight(player)) {
+					// We can see the player, just go straight to their location
+					enemy.moveTo(player.pos, 100);
+				} else {
+					// We can't see the player, but we know where they are, plot a path
+					path = enemy.navigateTo(player.pos);
+					// enemy.waypoint = path[1];
+					enemy.waypoints = path;
+					enemy.action = "observe";
+				}
+				break;
+			}
+		}
+	});
 
 	// SET CONTROLS
 	function playerControls() {

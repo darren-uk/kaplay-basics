@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.12.1" orientation="orthogonal" renderorder="right-down" width="20" height="20" tilewidth="32" tileheight="32" infinite="0" nextlayerid="3" nextobjectid="20">
+<map version="1.10" tiledversion="1.12.1" orientation="orthogonal" renderorder="right-down" width="20" height="20" tilewidth="32" tileheight="32" infinite="0" nextlayerid="4" nextobjectid="25">
+ <editorsettings>
+  <export target="../map02.json" format="json"/>
+ </editorsettings>
  <tileset firstgid="1" name="bg" tilewidth="32" tileheight="32" tilecount="400" columns="20">
   <image source="../sprites/level-bg-transparent.png" width="640" height="640"/>
  </tileset>
@@ -44,5 +47,11 @@
   <object id="17" x="416" y="224" width="64" height="64"/>
   <object id="18" x="544" y="96" width="64" height="192"/>
   <object id="19" x="288" y="384" width="32" height="128"/>
+ </objectgroup>
+ <objectgroup id="3" name="path">
+  <object id="21" x="32" y="288" width="256" height="320"/>
+  <object id="22" x="320" y="288" width="288" height="320"/>
+  <object id="23" x="288" y="288" width="32" height="96"/>
+  <object id="24" x="288" y="512" width="32" height="96"/>
  </objectgroup>
 </map>
