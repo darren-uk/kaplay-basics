@@ -41,27 +41,28 @@ async function main() {
 			continue;
 		}
 
-		// if (layer.name === "path") {
-		// 	for (const object of layer.objects) {
-		// 		// Add polygons for navmesh
-		// 		nav.addPolygon([
-		// 			vec2(object.x, object.y),
-		// 			vec2(object.x + object.width, object.y),
-		// 			vec2(object.x + object.width, object.y + object.height),
-		// 			vec2(object.x, object.y + object.height),
-		// 		]);
+		// ENEMY WORKS WITHOUT POLYGONS ??
+		if (layer.name === "path") {
+			for (const object of layer.objects) {
+				// Add polygons for navmesh
+				nav.addPolygon([
+					vec2(object.x, object.y),
+					vec2(object.x + object.width, object.y),
+					vec2(object.x + object.width, object.y + object.height),
+					vec2(object.x, object.y + object.height),
+				]);
 
-		// 		// add visual reference
-		// 		const path = map.add([
-		// 			rect(object.width, object.height),
-		// 			pos(object.x, object.y),
-		// 			color(GREEN),
-		// 			opacity(0.1),
-		// 			"path",
-		// 		]);
-		// 	}
-		// 	continue;
-		// }
+				// add visual reference
+				const path = map.add([
+					rect(object.width, object.height),
+					pos(object.x, object.y),
+					color(GREEN),
+					opacity(0.1),
+					"path",
+				]);
+			}
+			continue;
+		}
 	}
 
 	// ADD PLAYER SPRITE AFTER LOADING COLLIDERS FOR START POSITIONS TO LOAD
@@ -69,7 +70,7 @@ async function main() {
 		sprite("player"),
 		area(),
 		body(),
-		anchor(vec2(0, 0)),
+		anchor(vec2(0, 0)), // PLAYER MUST HAVE ANCHOR FOR ENEMY TO CONNECT PATH TO
 		pos(128, 448),
 		"player",
 		{ speed: 200 },
