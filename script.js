@@ -8,7 +8,7 @@ kaplay({
 
 // ADD LEVEL
 async function main() {
-	const mapData = await (await fetch("./map02.json")).json();
+	const mapData = await (await fetch("./map03.json")).json();
 	console.log("map loaded");
 
 	//load sprites
@@ -28,13 +28,13 @@ async function main() {
 
 		if (layer.name === "walls") {
 			for (const object of layer.objects) {
-				const collider = map.add([
+				const collider = add([
 					rect(object.width, object.height),
 					pos(object.x, object.y),
 					area(),
 					body({ isStatic: true }),
 					color(RED),
-					opacity(0),
+					opacity(0.2),
 					"wall",
 				]);
 			}
@@ -53,12 +53,11 @@ async function main() {
 				]);
 
 				// add visual reference
-				const path = map.add([
+				const pathshow = map.add([
 					rect(object.width, object.height),
 					pos(object.x, object.y),
 					color(GREEN),
 					opacity(0.1),
-					"path",
 				]);
 			}
 			continue;
@@ -109,10 +108,11 @@ async function main() {
 			area(),
 			body(),
 			sentry(
-				{ include: "player" },
+				{ include: ["player"] },
 				{
 					lineOfSight: true,
 					raycastExclude: ["enemy"],
+					raycastInclude: ["wall"],
 				},
 			),
 			patrol({ speed: 100 }),
@@ -131,6 +131,8 @@ async function main() {
 	addEnemy(vec2(512, 448));
 
 	let path;
+	let lastPos;
+
 	onUpdate("enemy", (enemy) => {
 		switch (enemy.action) {
 			case "observe": {
@@ -139,13 +141,23 @@ async function main() {
 			case "pursuit": {
 				if (enemy.hasLineOfSight(player)) {
 					// We can see the player, just go straight to their location
-					enemy.moveTo(player.pos, 100);
+					enemy.moveTo(player.pos, 200);
+					console.log("I can see you!");
+					lastPos = player.pos;
 				} else {
-					// We can't see the player, but we know where they are, plot a path
+					enemy.moveTo(lastPos, 200);
+					// // We can't see the player, but we know where they are, plot a path
 					path = enemy.navigateTo(player.pos);
-					// enemy.waypoint = path[1];
-					enemy.waypoints = path;
-					enemy.action = "observe";
+					// console.log("I will find where you were");
+					// // enemy.waypoint = path[1];
+
+					if (path) {
+						enemy.waypoints = path;
+
+						console.log("On patrol");
+					}
+					// console.log(path);
+					// enemy.action = "observe";
 				}
 				break;
 			}
